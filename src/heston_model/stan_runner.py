@@ -3,6 +3,7 @@ from typing import Dict, Any, Optional
 from cmdstanpy import CmdStanModel
 import pandas as pd
 import arviz as az
+from pathlib import Path
 
 from heston_model.utility.helpers import remove_cmdstan_files, parse_stan_dimensions
 
@@ -13,21 +14,22 @@ class StanRunner:
     
     def __init__(
         self,
-        code_path: str = 'heston_model/stan_code/heston.stan',
+        stanname: str = '/heston.stan',
         cmdstan_outdir : str = './cmdstan'
         ):
         """
         Initialize the Heston model.
         """
-        
-        self.code_path = code_path
+
+        self.code_path =  Path(__file__).parent / "stan_code" / stanname
         self.fit = None
         self.idata = None
         self.cmdstan_outdir = cmdstan_outdir
         self.data = None
         
         # compile
-        self.model = CmdStanModel(stan_file=code_path)
+        print(self.code_path)
+        self.model = CmdStanModel(stan_file=self.code_path)
 
     def sample(
         self, 

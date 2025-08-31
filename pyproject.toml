@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modified-bayesian-heston-model"
+version = "0.1.0"
+description = "Heston model with Bayesian modifications for stochastic volatility simulation"
+authors = [
+    { name="Nolan Sandgathe", email="nolansandgathe@gmail.com" }
+]
+dependencies = [
+    "numpy",
+    "matplotlib", 
+    "cmdstanpy"
+]
