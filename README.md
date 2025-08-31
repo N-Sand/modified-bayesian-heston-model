@@ -2,9 +2,73 @@
 A stan implementation of the Heston model, with some adjustments which better reflect real financial assets, such as fat-tailed distributions of returns, and quarterly seasonality.
 
 ![plot](plots/price_simulations.png)
+Figure 1 - The price history of Toronto Dominion bank's stock as well as some simulated future trajectories using the Heston Model Bayesian simulation.
+
 ## Quick Start
 
+### Install
+```bash
+git clone https://github.com/N-Sand/modified-bayesian-heston-model.git
+cd modified-bayesian-heston-model
+pip install  .
+```
+
+### Usage
 See the notebooks folder for a hands-on example.
+```python
+import pandas as pd
+
+from heston_model.stan_runner import StanRunner
+from heston_model.utility.helpers import create_data_dict
+
+df = # some financial asset data with index = date or timestamp
+
+file_name = 'heston_modified.stan' # or 'heston.stan' or others as I add them
+
+data = create_data_dict(
+    df.log_ret,
+    N_days_future = 252
+    )
+
+model = StanRunner(
+    stanname = file_name,
+    cmdstan_outdir = '<your_desired_scratch_folder>'
+)
+
+# warning, this will automatically delete .txt and .csv 
+# files in your chosen cmdstan scratch folder
+model.sample(
+    data,
+    num_samples = 1000,
+    chains = 4,
+    max_treedepth = 11,
+)
+
+print(model.get_diagnostics())
+
+coords = {
+    'T': pd.to_datetime(df.index).tolist(),            # datetime stamps for training set returns
+    'T_future': pd.date_range(                         # datetime stamps for future (oos) returns
+        start = df.index[-1] + pd.Timedelta(days=1),
+        periods = data['T_future'], freq = 'B'
+    ).tolist(),
+    'T - 1' : pd.to_datetime(df.index[:-1]).tolist(),  # datetime stamps for training set returns except final (some parameters do not have a final value)
+    'K' : np.arange(4)
+}
+
+# Define observed data
+observed_data = {
+    'returns': df.log_ret.values
+}
+
+# Create InferenceData object
+model.generate_idata(
+    coords = coords,
+    observed_data = observed_data
+)
+
+idata = model.idata
+```
 
 ## Theory and Model
 
