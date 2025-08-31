@@ -12,5 +12,7 @@ authors = [
 dependencies = [
     "numpy",
     "matplotlib", 
-    "cmdstanpy"
+    "cmdstanpy",
+    "arviz",
+    "pandas"
 ]
