@@ -7,6 +7,12 @@ Figure 1 - The price history of Toronto Dominion bank's stock as well as some si
 ## Quick Start
 
 ### Install
+You will require cmdstan and cmdstanpy to run this package. Run the following.
+```bash
+pip install cmdstanpy
+install_cmdstan
+```
+
 ```bash
 git clone https://github.com/N-Sand/modified-bayesian-heston-model.git
 cd modified-bayesian-heston-model
